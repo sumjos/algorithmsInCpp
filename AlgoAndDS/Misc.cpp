@@ -76,3 +76,22 @@ void testMinHeap() {
 	popFromMinHeap(ls);
 	std::cout << "Peeking heap... " << peekHeap(ls) << "\n";
 }
+
+void printPascal(int rows) {
+	int len = rows * (rows + 1) / 2;
+	std::vector<int> pascal(len, 0);
+	for (int a = 0; a < rows; a++) {
+		int start = a * (a + 1) / 2;
+		for (int b = 0; b <= a; b++) {
+			if (b == 0 || b == a) {
+				pascal[start + b] = 1;
+			}
+			else {
+				int prev_start = a*(a - 1) / 2;
+				pascal[start + b] = pascal[prev_start + b - 1] + pascal[prev_start + b];
+			}
+			std::cout << pascal[start + b] << "\t";
+		}
+		std::cout << "\n";
+	}
+}

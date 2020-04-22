@@ -27,11 +27,12 @@ struct Node {
 class Graph {
 private:
 	const int v;
-	list<int> *adj;
+	vector<vector<int>> adj;
 	vector<Edge> edgeList;
 	vector<vector<int>> weightMatrix;
 	void sortEdgeList();
 	void traverseBFS(list<int>, vector<bool> &);
+	std::vector<int> getCycle(std::vector<int>&, int, int);
 public:
 	Graph(int);
 	bool addEdge(int, int, int weight = 1);
@@ -52,7 +53,9 @@ public:
 	void testIsGraphCyclicDFS();
 	list<int> findShortestPath(int, int);
 	void testFindShortestPath();
-
+	void printACycleInAGraph();
+	std::vector<int> getDominantGroup();
+	void testGetDominantGroup();
 };
 
 //Disjkstra

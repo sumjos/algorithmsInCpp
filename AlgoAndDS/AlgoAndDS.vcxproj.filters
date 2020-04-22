@@ -33,6 +33,12 @@
     <ClInclude Include="Misc.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Trees.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Heap.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
@@ -63,6 +69,12 @@
       <Filter>Source Files\selfstudy</Filter>
     </ClCompile>
     <ClCompile Include="FordFulkerson.cpp">
+      <Filter>Source Files\selfstudy</Filter>
+    </ClCompile>
+    <ClCompile Include="Trees.cpp">
+      <Filter>Source Files\selfstudy</Filter>
+    </ClCompile>
+    <ClCompile Include="Heap.cpp">
       <Filter>Source Files\selfstudy</Filter>
     </ClCompile>
   </ItemGroup>

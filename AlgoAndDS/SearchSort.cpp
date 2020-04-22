@@ -8,7 +8,7 @@ SearchSort::SearchSort(std::vector<int> d) {
 
 int SearchSort::doBinarySearch(int val) {
 	int foundIdx = -1;
-	int start = 0, end = this->data.size(), mid = -1, intmd;
+	int start = 0, end = this->data.size()-1, mid = -1, intmd;
 	do {
 		mid = (start + end) / 2;
 		intmd = this->data[mid];

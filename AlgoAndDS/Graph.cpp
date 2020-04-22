@@ -2,10 +2,11 @@
 #include "SelfStudyFunctions.h"
 #include <iostream>
 #include <map>
+#include<unordered_map>;
 #include <vector>
 #include <limits>
 Graph::Graph(int size):v(size) {
-	this->adj = new list<int>[size];
+	this->adj.resize(size, {});
 	this->weightMatrix.resize(size);
 	for (int i = 0; i < size; i++) {
 		this->weightMatrix[i].resize(size);
@@ -17,10 +18,10 @@ Graph::Graph(int size):v(size) {
 
 bool Graph::addEdge(int u, int v, int weight) {
 	if (u <= this->v && v <= this->v) {
-		this->adj[u - 1].push_back(v);
-		this->adj[v - 1].push_back(u);
-		this->weightMatrix[u - 1][v - 1] = weight;
-		this->weightMatrix[v - 1][u - 1] = weight;
+		this->adj[u].push_back(v);
+		this->adj[v].push_back(u);
+		this->weightMatrix[u][v] = weight;
+		this->weightMatrix[v][u] = weight;
 		return true;
 	}
 	else {
@@ -36,7 +37,7 @@ void Graph::createEdgeListFromAdj() {
 		}
 	}
 	for (int idx = 0; idx < this->v; idx++) {
-		for (std::list<int>::iterator itr = this->adj[idx].begin(); itr != this->adj[idx].end(); itr++) {
+		for (std::vector<int>::iterator itr = this->adj[idx].begin(); itr != this->adj[idx].end(); itr++) {
 			if (!edgeCovered[idx*this->v + *itr - 1] && !edgeCovered[idx + (*itr - 1)*this->v]) {
 				struct Edge e;
 				e.src = idx;
@@ -111,7 +112,7 @@ bool Graph::isGraphCyclic() {
 		if (groups[i] == -1) {
 			groups[i] = i;
 		}
-		for (std::list<int>::iterator itr = this->adj[i].begin(); itr != this->adj[i].end(); itr++) {
+		for (std::vector<int>::iterator itr = this->adj[i].begin(); itr != this->adj[i].end(); itr++) {
 			int connIdx = *itr - 1;
 			if (!edgeCovered[i*this->v + connIdx]) {
 				edgeCovered[i*this->v + connIdx] = true;
@@ -201,7 +202,7 @@ bool Graph::isGraphCyclicFromEdgeList(vector<Edge> &edgeList) {
 
 void Graph::printRow(int idx, map<int, bool>& visited) {
 	std::map<int, bool>::iterator it;
-	for(std::list<int>::iterator itr = this->adj[idx].begin(); itr != this->adj[idx].end(); itr++) {
+	for(std::vector<int>::iterator itr = this->adj[idx].begin(); itr != this->adj[idx].end(); itr++) {
 		it = visited.find(*itr);
 		if (it == visited.end()) {
 			std::cout << *itr << ", ";
@@ -211,6 +212,49 @@ void Graph::printRow(int idx, map<int, bool>& visited) {
 	}
 }
 
+void Graph::printACycleInAGraph() {
+	vector<int> group(this->v, -1);
+	for (int i = 0; i < this->v; i++) {
+		group[i] = i;
+	}
+	vector<int> cycle;
+	for (int i = 0; i < this->v; i++) {
+		if (group[i] == i) {
+			cycle = getCycle(group, i, i);
+			if (cycle.size() > 0) {
+				break;
+			}
+		}
+	}
+	if (cycle.size() == 0) {
+		std::cout << "No Cycle Found\n";
+	}
+	else {
+		std::cout << "Cycle Found \n";
+		for(std::vector<int>::iterator itr = cycle.begin(); itr != cycle.end(); itr++) {
+			std::cout << *itr << " -> ";
+		}
+	}
+}
+
+std::vector<int> Graph::getCycle(std::vector<int>& group, int startidx, int par) {
+	for (std::vector<int>::iterator itr = adj[startidx].begin(); itr != adj[startidx].end(); itr++) {
+		if (par != *itr) {
+			if (group[*itr] == group[startidx]) {
+				return { startidx };
+			}
+			else {
+				group[*itr] = group[startidx];
+				std::vector<int> v = getCycle(group, *itr, startidx);
+				if (v.size() > 0) {
+					v.push_back(startidx);
+					return v;
+				}
+			}
+		}
+	}
+	return {};
+}
 void Graph::testBFS() {
 	std::cout << "Testing graph BFS \n";
 	Graph g(4);
@@ -243,14 +287,18 @@ void Graph::testIsGraphCyclic() {
 	if (g.addEdge(4, 3)) {
 		std::cout << "Added 4-3 edge\n";
 	}
-	if (g.addEdge(1, 5)) {
+	if (g.addEdge(2, 3)) {
 		std::cout << "Added 1-5 edge\n";
 	}
-	if (g.addEdge(2, 5)) {
-		std::cout << "Added 2-5 edge\n";
+	if (g.addEdge(3, 4)) {
+		std::cout << "Added 3-4 edge\n";
 	}
+	//if (g.addEdge(2, 5)) {
+	//	std::cout << "Added 2-5 edge\n";
+	//}
 	//output: true
-	std::cout << g.isGraphCyclic()<< "\n";
+	//std::cout << g.isGraphCyclic()<< "\n";
+	g.printACycleInAGraph();
 }
 
 void Graph::testIsGraphCyclicDFS() {
@@ -332,7 +380,7 @@ bool Graph::_isGraphCyclicDFS(std::vector<bool> &visited, int start, int parent)
 	}
 	else {
 		visited[start - 1] = true;
-		for (std::list<int>::iterator itr = this->adj[start-1].begin(); itr != this->adj[start-1].end(); itr++) {
+		for (std::vector<int>::iterator itr = this->adj[start-1].begin(); itr != this->adj[start-1].end(); itr++) {
 			if (*itr != parent) {
 				bool cyclic = _isGraphCyclicDFS(visited, *itr, start);
 				if (cyclic) {
@@ -367,7 +415,7 @@ std::list<int> Graph::findShortestPath(int start, int end) {
 		int node = queue.front();
 		queue.pop_front();
 		visited[node - 1] = true;
-		for (std::list<int>::iterator itr = this->adj[node - 1].begin(); itr != adj[node - 1].end(); itr++) {
+		for (std::vector<int>::iterator itr = this->adj[node - 1].begin(); itr != adj[node - 1].end(); itr++) {
 			if (!visited[*itr-1]) {
 				parents[*itr - 1] = node;
 				if (*itr == end) {
@@ -421,5 +469,80 @@ void Graph::testFindShortestPath() {
 	std::list<int> path = g.findShortestPath(1,6);
 	for (std::list<int>::iterator itr = path.begin(); itr != path.end(); itr++) {
 		std::cout << *itr << ",";
+	}
+}
+
+std::vector<int> Graph::getDominantGroup() {
+	std::vector<bool> visited(this->v, false);
+	std::vector<int> dominant;
+	std::unordered_map<int, int> order;
+	for (int i = 0; i < this->v; i++) {
+		order[i] = this->adj[i].size();
+	}
+	while (order.size() > 0) {
+		int count = -1; int maxIdx = -1;
+		for (std::unordered_map<int, int>::iterator itr = order.begin(); itr != order.end(); itr++) {
+			if (itr->second > count) {
+				count = itr->second;
+				maxIdx = itr->first;
+			}
+			else if (itr->second == count && count !=0) {
+				int c1 = 0, c2 = 0;
+				for (int i = 0; i < this->adj[maxIdx].size(); i++) {
+					if (!visited[adj[maxIdx][i]]) {
+						c1++;
+					}
+				}
+				for (int i = 0; i < this->adj[itr->first].size(); i++) {
+					if (!visited[adj[itr->first][i]]) {
+						c2++;
+					}
+				}
+				if (c2 > c1) {
+					maxIdx = itr->first;
+				}
+			}
+		}
+		dominant.push_back(maxIdx);
+		visited[maxIdx] = true;
+		order.erase(maxIdx);
+		for (int i = 0; i < this->adj[maxIdx].size(); i++) {
+			visited[adj[maxIdx][i]] = true;
+			order.erase(adj[maxIdx][i]);
+		}
+	}
+	return dominant;
+}
+
+void Graph::testGetDominantGroup() {
+	Graph g(8);
+
+	if (g.addEdge(0, 1)) {
+		std::cout << "Added 0-1 edge\n";
+	}if (g.addEdge(0, 6)) {
+		std::cout << "Added 0-6 edge\n";
+	}if (g.addEdge(0, 7)) {
+		std::cout << "Added 0-7 edge\n";
+	}if (g.addEdge(1, 7)) {
+		std::cout << "Added 1-7 edge\n";
+	}if (g.addEdge(1, 2)) {
+		std::cout << "Added 1-2 edge\n";
+	}if (g.addEdge(2, 7)) {
+		std::cout << "Added 2-7 edge\n";
+	}if (g.addEdge(2, 3)) {
+		std::cout << "Added 2-3 edge\n";
+	}if (g.addEdge(3, 7)) {
+		std::cout << "Added 3-7 edge\n";
+	}if (g.addEdge(3, 4)) {
+		std::cout << "Added 3-4 edge\n";
+	}if (g.addEdge(4, 5)) {
+		std::cout << "Added 4-5 edge\n";
+	}if (g.addEdge(5, 6)) {
+		std::cout << "Added 5-6 edge\n";
+	}
+	std::vector<int> v = g.getDominantGroup();
+	std::cout << "Dominant group is \t";
+	for (std::vector<int>::iterator itr = v.begin(); itr != v.end(); itr++) {
+		cout << *itr <<" , ";
 	}
 }

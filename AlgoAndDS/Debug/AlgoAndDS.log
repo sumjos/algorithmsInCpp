@@ -1,2 +1,9 @@
-﻿  FordFulkerson.cpp
+﻿  Graph.cpp
+C:\Users\Sumit Joshi\source\repos\AlgoAndDS\AlgoAndDS\Graph.cpp(5,9): warning C4067:  unexpected tokens following preprocessor directive - expected a newline
+C:\Users\Sumit Joshi\source\repos\AlgoAndDS\AlgoAndDS\Graph.cpp(165,20): warning C4018:  '<': signed/unsigned mismatch
+C:\Users\Sumit Joshi\source\repos\AlgoAndDS\AlgoAndDS\Graph.cpp(166,21): warning C4018:  '<': signed/unsigned mismatch
+C:\Users\Sumit Joshi\source\repos\AlgoAndDS\AlgoAndDS\Graph.cpp(359,20): warning C4018:  '<': signed/unsigned mismatch
+C:\Users\Sumit Joshi\source\repos\AlgoAndDS\AlgoAndDS\Graph.cpp(491,23): warning C4018:  '<': signed/unsigned mismatch
+C:\Users\Sumit Joshi\source\repos\AlgoAndDS\AlgoAndDS\Graph.cpp(496,23): warning C4018:  '<': signed/unsigned mismatch
+C:\Users\Sumit Joshi\source\repos\AlgoAndDS\AlgoAndDS\Graph.cpp(509,21): warning C4018:  '<': signed/unsigned mismatch
   AlgoAndDS.vcxproj -> C:\Users\Sumit Joshi\source\repos\AlgoAndDS\Debug\AlgoAndDS.exe
